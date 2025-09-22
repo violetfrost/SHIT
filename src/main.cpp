@@ -1,5 +1,7 @@
 #include <iostream>
 #include <filesystem>
+#include <fstream>
+#include <string>
 
 /*
  * Simple HTML Include Tool
@@ -50,12 +52,10 @@ int main(int argc, char *argv[])
         std::cerr << "One or more of the provided paths does not exist." << std::endl;
         return 101;
     }
-
-    // Iterate over all the files in the input directory looking for HTML files
-    // TODO make recursive
+    
     std::vector<std::string> htmlFiles;
 
-    for (const auto &entry : std::filesystem::directory_iterator(inputPath))
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(inputPath))
     {
         if (entry.is_regular_file() && entry.path().extension() == ".html")
         {
@@ -63,16 +63,29 @@ int main(int argc, char *argv[])
         }
     }
 
-    // That bitch has no HTML files
     if (htmlFiles.size() == 0)
     {
         std::cerr << "The input directory contains no HTML files." << std::endl;
         return 101;
     }
-    
-    for(int i = 0; i < htmlFiles.size(); i++)
+
+    for (int i = 0; i < htmlFiles.size(); i++)
     {
-        std::cout << htmlFiles[i] << std::endl; 
+        std::cout << htmlFiles[i] << std::endl;
+
+        std::ifstream file(htmlFiles[i]);
+
+        if(!file.is_open())
+        {
+            std::cerr << "Failed to open file " << htmlFiles[i] << std::endl;
+            continue;
+        }
+
+        std::string line;
+        while(std::getline(file, line))
+        {
+            std::cout << line << std::endl;
+        }
     }
 
     return 0;
