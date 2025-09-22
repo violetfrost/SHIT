@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
 
     // Side note, I really hate regex.
     // Like seriously, vehemently hate regex.
-    // It works, though. First try, too!
-    static const std::regex customTagRegex(R"re(^<%\s*(?:"([^"]+)"|([^\s>]+))\s*%>$)re");
+    // It works, though. Second try, too!
+    static const std::regex customTagRegex(R"re(^\s*<%\s*(?:"([^"]+)"|([^\s>]+))\s*%>\s*$)re");
     // We want to set this up outside of a loop because... well, duh ^
 
     // Iterate over all of the HTML filepaths in the input directory & its children
@@ -97,7 +97,13 @@ int main(int argc, char *argv[])
             std::smatch match;
             if(std::regex_match(line, match, customTagRegex))
             {
-                std::cout << "REGEX MATCH: " << line << std::endl;
+                // We have a regex match! A custom tag was detected...
+                // Did we get a quoted path or an unquoted one?
+
+                if(match[1].matched)
+                    std::cout << match[1].str() << std::endl;
+                if(match[2].matched)
+                    std::cout << match[2].str() << std::endl;
             }
         }
     }
