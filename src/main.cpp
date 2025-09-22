@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <regex>
 
 /*
  * Simple HTML Include Tool
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
         std::cerr << "One or more of the provided paths does not exist." << std::endl;
         return 101;
     }
-    
+
     std::vector<std::string> htmlFiles;
 
     for (const auto &entry : std::filesystem::recursive_directory_iterator(inputPath))
@@ -69,22 +70,35 @@ int main(int argc, char *argv[])
         return 101;
     }
 
+    // Side note, I really hate regex.
+    // Like seriously, vehemently hate regex.
+    // It works, though. First try, too!
+    static const std::regex customTagRegex(R"re(^<%\s*(?:"([^"]+)"|([^\s>]+))\s*%>$)re");
+    // We want to set this up outside of a loop because... well, duh ^
+
+    // Iterate over all of the HTML filepaths in the input directory & its children
     for (int i = 0; i < htmlFiles.size(); i++)
     {
         std::cout << htmlFiles[i] << std::endl;
 
+        // Emergency breakout for if there's some filesystem fuckery going on
         std::ifstream file(htmlFiles[i]);
-
-        if(!file.is_open())
+        if (!file.is_open())
         {
             std::cerr << "Failed to open file " << htmlFiles[i] << std::endl;
             continue;
         }
 
+        // Now we have access to the file and can actually begin to compile it
+        std::vector<std::string> exportLines;
         std::string line;
-        while(std::getline(file, line))
+        while (std::getline(file, line))
         {
-            std::cout << line << std::endl;
+            std::smatch match;
+            if(std::regex_match(line, match, customTagRegex))
+            {
+                std::cout << "REGEX MATCH: " << line << std::endl;
+            }
         }
     }
 
