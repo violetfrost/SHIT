@@ -36,6 +36,8 @@ In your HTML files, you can include other HTML files (or really any text file, i
 <% relative_path_to_file %>
 ```
 
+> Note: right now, SHIT just blindly copies all HTML files into the output directory INCLUDING templates. It may be beneficial to use a file extension like `.shit` for your templates for this reason. 
+
 At compile time, that tag will be replaced with the contents of the specified folder. To compile:
 
 ```console
