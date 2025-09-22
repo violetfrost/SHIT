@@ -125,13 +125,26 @@ int main(int argc, char *argv[])
     for (int i = 0; i < htmlFiles.size(); i++)
     {
         std::vector<std::string> compiled = compile_html_file(htmlFiles[i]);
+        std::filesystem::path outFile = outputPath / std::filesystem::relative(htmlFiles[i], inputPath);
+
+        std::cout << std::endl << std::endl << "HTML FILE GENERATED FROM " << htmlFiles[i];
+        std::cout << std::endl << std::endl << "Saving to disk at " << outFile << std::endl << std::endl;
         
-        std::cout << std::endl << std::endl << "HTML FILE GENERATED FROM " << htmlFiles[i] << std::endl << std::endl;
+        std::ofstream outputFile(outFile);
+
+        if(!outputFile)
+        {
+            std::cerr << "Failed to export file " << outFile << std::endl;
+            continue;
+        }
 
         for(int x = 0; x < compiled.size(); x++)
         {
-            std::cout  << compiled[x] << std::endl;
+            std::cout << compiled[x] << std::endl;
+            outputFile << compiled[x] << "\n";
         }
+        
+        outputFile.close();
     }
 
     return 0;

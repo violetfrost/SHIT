@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.scons": "python",
+        "regex": "cpp"
+    }
+}
